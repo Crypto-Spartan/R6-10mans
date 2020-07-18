@@ -1,0 +1,7 @@
+*.pyc
+*.spec
+__pychache__/
+*test.py
+conf/
+data/
+players.json

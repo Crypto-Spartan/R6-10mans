@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block customcss %}
+<!-- Custom styles for this template -->
+<link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}" rel="stylesheet" type="text/css">
+{% endblock customcss %}
+
+{% block bodycontent %}
+{% set player = player_entry|tojsonobj %}
+<div class="container-fluid">
+  <div class="row mt-4">
+    <h2 class="mx-auto">Player not found. You have not been registered.</h2>
+  </div>
+  <div class="row mt-2">
+    <h3 class="mx-auto">Ensure your uplay name is correct and try again.</h3>
+  </div>
+  <div class="row mt-2">
+    <h6 class="mx-auto">Click <a href="/home">here</a> to go back.</h6>
+  </div>
+
+  <div class="row text-center mt-3 d-flex justify-content-center">
+    <div class="col-lg-4 col-md-6 mb-5">
+      <table class="table table-bordered">
+        <tbody class="text-white">
+          <tr>
+            <td><strong>Discord</strong></td>
+            <td>{{ player['discord'] }}</td>
+          </tr>
+          <tr>
+            <td><strong>Uplay</strong></td>
+            <td>{{ player['uplay'] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock bodycontent %}

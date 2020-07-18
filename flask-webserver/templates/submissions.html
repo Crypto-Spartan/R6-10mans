@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block customcss %}
+<!-- Custom styles for this template -->
+<link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}" rel="stylesheet" type="text/css">
+{% endblock customcss %}
+
+{% block bodycontent %}
+<div class="container-fluid">
+  <div class="row" style="padding-top: 8rem">
+    <div class="formwrapper mx-auto" style="background: none; border: 4px solid; border-color: #bcc2c7">
+      <h2 class="text-center">10 Man's Registrations</h2>
+      <h3 class="title text-center">{{ scrimdate }}</h3>
+      {% from "_formhelpers.html" import render_field %}
+      <form method="POST" action="/" style="background: none">
+        {{ form.hidden_tag() }}
+        <div class="form-field">{{ render_field(form.discord) }}</div>
+        <div class="form-field">{{ render_field(form.uplay) }}</div>
+        {{ form.submit }}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock bodycontent %}
+
+

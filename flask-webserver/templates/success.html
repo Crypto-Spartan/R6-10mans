@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+
+{% block customcss %}
+<!-- Custom styles for this template -->
+<link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='player_imgs.css') }}" rel="stylesheet" type="text/css">
+{% endblock customcss %}
+
+{% block bodycontent %}
+{% set player = player_entry|tojsonobj %}
+<div class="container-fluid">
+  <div class="row mt-5">
+    <h1 class="mx-auto">We have received your submission.</h1>
+  </div>
+
+  <div class="row text-center d-flex justify-content-center">
+    <div class="col-lg-3 col-md-4 mb-5" style="padding-top: 5rem">
+      <img class="profile-img border-white rounded-circle" src="{{ player['picture'] }}">
+    </div>
+    <div class="col-lg-3 col-md-4 mb-5" style="padding-top: 8rem">
+      <table class="table table-bordered">
+        <tbody class="text-white">
+          <tr>
+            <td><strong>Discord</strong></td>
+            <td>{{ player['discord'] }}</td>
+          </tr>
+          <tr>
+            <td><strong>Uplay</strong></td>
+            <td>{{ player['uplay'] }}</td>
+          </tr>
+          <tr>
+            <td><strong>Level</strong></td>
+            <td>{{ player['level'] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-3 col-md-4 mb-5" style="padding-top: 3rem">
+      <img class="rank-img" src="{{ player['rank_img'] }}">
+      <h4>{{ player['rank_w_mmr'] }}</h4>
+      <h5>{{ player['season'] }}</h5>
+    </div>
+  </div>
+
+</div>
+{% endblock bodycontent %}

@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block customcss %}
+<!-- Custom styles for this template -->
+<link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='player_imgs.css') }}" rel="stylesheet" type="text/css">
+{% endblock customcss %}
+
+{% block bodycontent %}
+{% set player = player_entry|tojsonobj %}
+<div class="container-fluid">
+  <div class="row mt-5">
+    <h1 class="mx-auto">Confirm Registration</h1>
+  </div>
+
+  <div class="row text-center d-flex justify-content-center">
+    <div class="col-lg-3 col-md-4 mb-5" style="padding-top: 5rem">
+      <img class="profile-img border-white rounded-circle" src="{{ player['picture'] }}">
+    </div>
+    <div class="col-lg-3 col-md-4 mb-5" style="padding-top: 8rem">
+      <table class="table table-bordered">
+        <tbody class="text-white">
+          <tr>
+            <td><strong>Discord</strong></td>
+            <td>{{ player['discord'] }}</td>
+          </tr>
+          <tr>
+            <td><strong>Uplay</strong></td>
+            <td>{{ player['uplay'] }}</td>
+          </tr>
+          <tr>
+            <td><strong>Level</strong></td>
+            <td>{{ player['level'] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-3 col-md-4 mb-5" style="padding-top: 3rem">
+      <img class="rank-img" src="{{ player['rank_img'] }}">
+      <h4>{{ player['rank_w_mmr'] }}</h4>
+      <h5>{{ player['season'] }}</h5>
+    </div>
+  </div>
+
+  <div class="row text-center mt-3 d-flex justify-content-center">
+    <form method="POST" action="/confirmation_check" style="background: none">
+      {{ form.hidden_tag() }}
+      {{ form.discord }}
+      {{ form.uplay }}
+      {{ form.rank_w_mmr }}
+      {{ form.avg_mmr }}
+      {{ form.level }}
+      {{ form.season }}
+      {{ form.picture }}
+      {{ form.rank_img }}
+      <div><input class="submit btn btn-success" id="submit" name="submit" type="submit" value="Submit" style="width: auto; background: none; margin-right: 2rem!important;"><a href="/" type="submit" class="btn btn-danger" style="width: auto; margin-left: 2rem!important;">Cancel</a></div>
+    </form>
+  </div>
+</div>
+{% endblock bodycontent %}
