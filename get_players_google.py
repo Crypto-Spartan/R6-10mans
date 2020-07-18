@@ -15,8 +15,6 @@ sheet_raw = sheet.get_all_values()
 players_raw = []
 players = {}
 
-rank_adjust = {'rex209er':3600, 'j3lly#0666':3700, 'j3lly': 3700, 'fawt.-':3800, 'fawt':3800, 'hybrid':3800}
-
 for i in sheet_raw[1:]:
   i = i[1:]
   players_raw.append(i)

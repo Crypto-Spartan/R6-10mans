@@ -9,8 +9,6 @@ print()
 
 players = {}
 
-rank_adjust = {}#'zixxorb':2000, 'rex209er':3600, 'j3lly#0666':3700, 'j3lly': 3700}
-
 script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 rel_path = "data/sheet_raw.csv"
 abs_file_path = os.path.join(script_dir, rel_path)
