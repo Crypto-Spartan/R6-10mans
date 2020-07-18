@@ -1,7 +1,6 @@
 *.pyc
 *.spec
-__pychache__/
-*test.py
+__pycache__/
 conf/
 data/
 players.json
