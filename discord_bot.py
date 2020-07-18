@@ -2,8 +2,15 @@ import discord
 from discord.ext import commands
 import asyncio
 from datetime import datetime as dt
+import os
 
-TOKEN = 'Njk0ODA0NDI0MTc0MDc1OTk0.XoRHcA.4QBmDc9HiN5nxHVp3kmPwD0fjR8'
+script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+rel_path = "conf/discord_token.txt"
+abs_file_path = os.path.join(script_dir, rel_path)
+
+with open(abs_file_path, 'r') as f:
+	TOKEN = f.read()
+	TOKEN = TOKEN.strip()
 
 client = discord.Client()
 
