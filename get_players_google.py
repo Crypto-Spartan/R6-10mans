@@ -8,7 +8,7 @@ print('STARTING...')
 
 scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name('D:\\Documents (D)\\PythonProjects\\10 mans\\conf\\googledata.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('D:\\Documents (D)\\PythonProjects\\R6-10mans\\conf\\googledata.json', scope)
 client = gspread.authorize(creds)
 sheet = client.open('10 Man Scrims').sheet1
 sheet_raw = sheet.get_all_values()
@@ -20,7 +20,7 @@ for i in sheet_raw[1:]:
   players_raw.append(i)
 #print(players_raw)
 
-with open("D:\\Documents (D)\\PythonProjects\\10 mans\\data/sheet_raw.csv", "w", newline="") as f:
+with open("D:\\Documents (D)\\PythonProjects\\R6-10mans\\data/sheet_raw.csv", "w", newline="") as f:
   writer = csv.writer(f)
   writer.writerows(sheet_raw)
 
@@ -29,9 +29,9 @@ def main():
     elo = 0
     discord_user = player[0]
     
-    if discord_user.lower() in rank_adjust:
-      players[discord_user] = rank_adjust[discord_user.lower()]
-      continue
+    #if discord_user.lower() in rank_adjust:
+    #  players[discord_user] = rank_adjust[discord_user.lower()]
+    #  continue
 
     rank = player[2]
 
@@ -131,7 +131,7 @@ def main():
 main()
 #print(players)
 
-with open('D:\\Documents (D)\\PythonProjects\\10 mans\\players.json', 'w') as f:
+with open('D:\\Documents (D)\\PythonProjects\\R6-10mans\\players.json', 'w') as f:
   f.write(json.dumps(players)+'\n')
 
 print('FINISHED.')
