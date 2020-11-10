@@ -21,4 +21,4 @@ async def foo():
         '''
         await webhook.send(webhook_text, username='10-Mans Bot')
 
-asyncio.run(foo())
+asyncio.get_event_loop().run_until_complete(foo())

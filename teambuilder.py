@@ -5,6 +5,9 @@ import json
 import csv
 import sys
 import cProfile
+import os
+import math
+from numba import jit,njit
 
 
 print('START')
@@ -12,7 +15,6 @@ print('------------------------------'*10)
 print()
 
 
-players = json.load(open("players.json"))
 #print(players)
 
 def get_len(players):
@@ -114,8 +116,11 @@ def lambda_sort():
 
 
 def get_matchups(players):
-  players = dict(sorted(players.items(), key=lambda_random(), reverse=True))
   total_players = get_len(players)
+  top_two = sorted(players.items(), key=lambda x: x[1], reverse=True)[:2]
+
+  #print(top_two)
+  players = dict(sorted(players.items(), key=lambda_random()))
   maxruns = total_players // 10
   
   print(f'Players: {total_players}')
@@ -131,12 +136,18 @@ def get_matchups(players):
   match = 0
   best_combos = []
   
-  full_result_list = list(map(dict, combinations(players.items(), 5)))
-  result_list = groups_on_same_team(players,groups,full_result_list)
+  full_result_list = [dict(x) for x in combinations(players.items(), 5)]
+  #full_result_list = list(map(dict, combinations(players.items(), 5)))
+  if groups:
+    result_list = groups_on_same_team(players,groups,full_result_list)
+  else:
+    result_list = full_result_list
+  
   result_list_len = len(result_list)
   full_result_list = []
 
   print(f'Possible Teams: {result_list_len:,}')
+  print(f'{math.comb(len(players), 5):,}')
   print(f'Possible Combos: {(result_list_len**2) - result_list_len:,}')
 
   while get_len(players) >= 10:
@@ -154,7 +165,8 @@ def get_matchups(players):
       break
 
     if get_len(players) >= 10 and runtimes < maxruns:
-      full_result_list = list(map(dict, combinations(players.items(), 5)))
+      full_result_list = [dict(x) for x in combinations(players.items(), 5)]
+      #full_result_list = list(map(dict, combinations(players.items(), 5)))
       result_list = groups_on_same_team(players,groups,full_result_list)
       full_result_list = []
       result_list_len = len(result_list)
@@ -168,18 +180,16 @@ def get_matchups(players):
   print(f'Total Combinations Tried: {recursive_count:,}')
   print()
   
-  for i in best_combos:
+  for matchup in best_combos:
     match += 1
-    i[0] = sorted(i[0].items(), key=lambda_sort(), reverse=True)
-    i[1] = sorted(i[1].items(), key=lambda_sort(), reverse=True)
-    print(f'MATCH {match} - {i[2]} Elo')
+    print(f'MATCH {match} - {matchup[2]} MMR')
     
-    if int(i[2].split(' ')[1]) > 0:
-      print(list(i[0]))
-      print(list(i[1]))
+    if int(matchup[2].split(' ')[1]) > 0:
+      print(list(matchup[0]))
+      print(list(matchup[1]))
     else:
-      print(list(i[0])[1:])
-      print(list(i[1])[1:])
+      print(list(matchup[0])[1:])
+      print(list(matchup[1])[1:])
     print()
   
   if remaining_player_count < 10:
@@ -211,7 +221,6 @@ def get_matchups(players):
 
 
 
-
 def create_match(difference_best, match_check, recursive_count, best_combos, result_list, total_players, players, groups):
 
   for combo in result_list:
@@ -230,31 +239,43 @@ def create_match(difference_best, match_check, recursive_count, best_combos, res
         print(f'Combinations Tried: {round((recursive_count / 1000000), 2)} Million')
 
       playerlist_check = set(teamcheck.keys())
+      shared_players = playerlist_check & playerlist
       
-      shared_players = [x for x in playerlist_check if x in playerlist]
       if not shared_players:
         team2_total = sum(teamcheck.values())
         difference = abs(team1_total - team2_total)
         
         if difference <= difference_best:
+          
           game = []
           difference_best = difference
           combo['total'] = team1_total
           teamcheck['total'] = team2_total
-          game.append(combo)
-          game.append(teamcheck)
+          combo_sorted = sorted(combo.items(), key=lambda_sort(), reverse=True)
+          teamcheck_sorted = sorted(teamcheck.items(), key=lambda_sort(), reverse=True)
+
+          #if ((combo_sorted[1][1] > teamcheck_sorted[1][1] and combo_sorted[2][1] > teamcheck_sorted[2][1]) \
+           # or (teamcheck_sorted[1][1] > combo_sorted[1][1] and teamcheck_sorted[2][1] > combo_sorted[2][1])):
+          if ((abs((combo_sorted[1][1] + combo_sorted[2][1] + combo_sorted[3][1]) - (teamcheck_sorted[1][1] + teamcheck_sorted[2][1] + teamcheck_sorted[3][1]))) > 200) \
+          or ((combo_sorted[1][1] > teamcheck_sorted[1][1] and combo_sorted[2][1] > teamcheck_sorted[2][1]) or (teamcheck_sorted[1][1] > combo_sorted[1][1] and teamcheck_sorted[2][1] > combo_sorted[2][1])):
+            del combo['total']
+            del teamcheck['total']
+            continue
+
+          game.append(combo_sorted)
+          game.append(teamcheck_sorted)
           game.append(f'difference: {difference}')
-          
-          for key, value in game[0].items():
+          #game.append('difference: %s' % (difference))
+                    
+          for key in combo:
             if key != 'total':
               del players[key]
-          for key, value in game[1].items():
+          for key in teamcheck:
             if key != 'total':
               del players[key]
             
           best_combos.append(game)
-          print(f'Match Created. - Combinations Tried: {recursive_count:,}')
-          print()
+          print(f'Match Created. - Combinations Tried: {recursive_count:,}\n')
           break
 
   return difference_best, match_check, recursive_count, best_combos, players
@@ -265,7 +286,8 @@ def create_match(difference_best, match_check, recursive_count, best_combos, res
 def get_playergroups(players):
   groups = {}
     
-  groups_check = input('Did any players signup in a group? (n/no): ').lower() or 'n'
+  #groups_check = input('Did any players signup in a group? (n/no): ').lower() or 'n'
+  groups_check = 'n'
 
   if groups_check[0] == 'y':
 
@@ -299,12 +321,12 @@ def get_playergroups(players):
       list_of_groups.append(group_list_tuple)
 
     for g in list_of_groups:
-      group_elo = 0
+      group_mmr = 0
       
       for p in g:
-        group_elo += players[p]
+        group_mmr += players[p]
       
-      groups[g] = group_elo
+      groups[g] = group_mmr
     
     print()
     print(f'Groups: {groups}')
@@ -362,6 +384,9 @@ def get_uplay_names(best_combos):
     print()
 
 def main_func():
+  players = { 'Aliossz':2400, 'BERSERK.ENTELOS':2300, 'dontcussim5':2300, 'lil_broomstick':2300, 'passwordis12345':2800, 'fusedProdigy':3600, 'T-huntbot':2800, 'runmedome':2300, 'notTheos':2100, 'mexdex':2300, 'j3lly':3600, 'nigelfarage':3600, 'eduva':2800, 'the_camel4':2300, 'amdthreadripper':1800, 'ohmoose':2800, 'kophosis':2800, 'kj_roman':2600, 'spectrum':2400, 'twizillerhat':2400, 'cryptospartan':2300, 'coach':3200, 'dinkster':3400, 'player01':1800, 'player02':2000, 'player03':3000, 'player04':2500, 'player05':1900, 'player06':1800, 'player07':2100, 'player08':4000, 'player09':2600, 'player10':3500, 'player11':3200, 'player12':2500, 'player13':2700, 'player14':2600, 'player15':2300, 'player16':2500, 'player17':1900}#, 'player18':2500, 'player19':3100, 'player20':2900}#, 'player21':2200, 'player22':2000, 'player23':2400, 'player24':3200, 'player25':2600, 'player26':2800}#, 'player27':3000, 'player28':3600 }
+  #players = json.load(open('players.json'))
+
   while get_matchups(players) >= 10:
     print('\n\n\n')
 
