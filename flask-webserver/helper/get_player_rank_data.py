@@ -13,8 +13,7 @@ def get_html(username):
 def get_pic_and_level(soup):
 	try:
 		picture = soup.find('div', class_='trn-profile-header__avatar trn-roundavatar trn-roundavatar--white').img['src']
-		level = int(soup.find('div', class_='trn-defstat__name', text='Level').find_next_sibling().text.strip())
-
+		level = int(soup.find('div', class_='trn-defstat__name', text='Level').find_next_sibling().string.strip())
 		return {'picture': picture, 'level': level}
 	except:
 		return 'NOT FOUND'
@@ -106,7 +105,7 @@ def get_player_rank_data(username):
 
 
 if __name__ == '__main__':
-	#username = 'crypto-spartan'
-	username = 'areze.ttv'
+	username = 'crypto-spartan'
+	#username = 'areze.ttv'
 	player_rank_data = get_player_rank_data(username)
 	print(player_rank_data)

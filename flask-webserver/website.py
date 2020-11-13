@@ -7,7 +7,7 @@ import json
 from operator import itemgetter
 
 SCRIMDATE = 'Fri 10 July @ 7pm EDT'
-ALLOW_SUBMISSIONS = False
+ALLOW_SUBMISSIONS = True
 
 
 # start of flask app
